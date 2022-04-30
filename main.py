@@ -8,6 +8,7 @@ from passwrd import *
 #
 #
 
+
 def connectToTwitter():
     print("Connecting to twitter")
     #auth = tweepy.OAuth1UserHandler(notMyAPIKey,notMyAPIKeySecret,notMyAccessToken,notMyAccessTokenSecret)
@@ -18,14 +19,24 @@ def connectToTwitter():
 
     api = tweepy.API(auth, wait_on_rate_limit=True)
 
-    status = "Hi Lisa!"
-    api.update_status(status=status)
 
-    api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True, compression=True)
+    return api
+
+def postAStatus(api, statusIn):
+    api.update_status(status=statusIn)
+
+def postAnImage(api):
+    imagePath = "images/cat0.webp"
+    status = "Cat!"
+
+    api.update_status_with_media(imagePath, status)
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    connectToTwitter()
+    api = connectToTwitter()
+    statusIn = "Hello Twitter"
+    postAStatus(api, statusIn)
+    #postAnImage(api)
+
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
