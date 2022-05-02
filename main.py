@@ -5,12 +5,55 @@
 import tweepy
 import schedule
 import time
+import praw
 from passwrd import *
 
 #
 #
+reddit = praw.Reddit(
+    client_id = redclient_id,
+    client_secret = redclient_secret,
+    password = redpassword,
+    user_agent = reduser_agent,
+    username = redusername,
+)
+
+print(reddit.user.me())
+
+subreddit = reddit.subreddit("awww")
+
+posts = subreddit.top("month")
+# Scraping the top posts of the current month
+ 
+posts_dict = {"Title": [], "Post Text": [],
+              "ID": [], "Score": [],
+              "Total Comments": [], "Post URL": []
+              }
+ 
+for post in posts:
+    # Title of each post
+    posts_dict["Title"].append(post.title)
+     
+    # Text inside a post
+    posts_dict["Post Text"].append(post.selftext)
+     
+    # Unique ID of each post
+    posts_dict["ID"].append(post.id)
+     
+    # The score of a post
+    posts_dict["Score"].append(post.score)
+     
+    # Total number of comments inside the post
+    posts_dict["Total Comments"].append(post.num_comments)
+     
+    # URL of each post
+    posts_dict["Post URL"].append(post.url)
+
+print(str(posts_dict))
+
 def getImageList():
     # return a list of local images
+    print("Indexing local images...")
 
 def connectToTwitter():
     print("Connecting to twitter")
