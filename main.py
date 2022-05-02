@@ -141,16 +141,6 @@ def postAnImage(postIdx,validURLList):
 
 
 
-
-#schedule.every(2).seconds.do(getImages)
-#schedule.every(5).seconds.do(postAnImage)
-
-#schedule.every(45).minutes.do(getImages)
-#schedule.every(5).minutes.do(postAnImage)
-
-#schedule.every(18).hour.do(getImages)
-#schedule.every(2).hour.do(postAnImage)
-
 if __name__ == '__main__':
     #api = connectToTwitter()
     #nextImgToPostIdx = 0
