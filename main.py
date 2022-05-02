@@ -3,6 +3,8 @@
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import tweepy
+import schedule
+import time
 from passwrd import *
 
 #
@@ -23,20 +25,35 @@ def connectToTwitter():
     return api
 
 def postAStatus(api, statusIn):
+    print("Tweeted: " + str(statusIn))
     api.update_status(status=statusIn)
 
 def postAnImage(api):
-    imagePath = "images/cat0.webp"
+
+    imagePath = "C:/Users/Tom/PycharmProjects/TwitterBot/cat0.webp"
     status = "Cat!"
 
-    api.update_status_with_media(imagePath, status)
+    api.update_status_with_media(status, imagePath)
+    print("Tweeted an image: " + str(status))
 
+def getImages():
+    #scrape images
+    print("scraped!")
+
+schedule.every(2).seconds.do(getImages)
+#schedule.every(2).hour.do(getImages())
+#schedule.every(2).hour.do(getImages())
 
 if __name__ == '__main__':
     api = connectToTwitter()
-    statusIn = "Hello Twitter"
-    postAStatus(api, statusIn)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+    #statusIn = "Hello Twitter"
+    #postAStatus(api, statusIn)
     #postAnImage(api)
+
+
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
