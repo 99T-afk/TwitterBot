@@ -21,58 +21,30 @@ reddit = praw.Reddit(
 
 print(reddit.user.me())
 
-subreddit = reddit.subreddit("floof")
 
+#config
 urlList = []
+validURLList = []
+global nextImgToPostIdx
+nextImgToPostIdx = 0
 
-posts = subreddit.top("month")
-# Scraping the top posts of the current month
- 
-#posts_dict = {"Title": [], "Post Text": [], "ID": [], "Score": [], "Total Comments": [], "Post URL": []}
-posts_dict = {"Post URL": []}
- 
-"""for post in posts:
-    # Title of each post
-    posts_dict["Title"].append(post.title)
-    # Text inside a post
-    posts_dict["Post Text"].append(post.selftext)
-    # Unique ID of each post
-    posts_dict["ID"].append(post.id) 
-    # The score of a post
-    posts_dict["Score"].append(post.score)    
-    # Total number of comments inside the post
-    posts_dict["Total Comments"].append(post.num_comments)    
-    # URL of each post
-    posts_dict["Post URL"].append(post.url)"""
+def config():
+    global nextImgToPostIdx
+    nextImgToPostIdx = 0
+    global validURLList
+    validURLList = []
 
-for post in posts:
-    posts_dict["Post URL"].append(post.url)
-    urlList.append(post.url)
-
-print(str(posts_dict))
-
-
-imgCount = 0
-maxImg = 9  #zero indexed
-for imgIdx, image_url in enumerate(urlList):
-
-    #print(str(image_url[-3:]))
-
-    if(image_url[-3:] == 'jpg' or image_url[-3] == 'png'):
-        img_data = requests.get(image_url).content
-        inputName = "cute" + str(imgCount) + image_url[-4:]
-        with open(inputName, 'wb') as handler:
-            handler.write(img_data)
-        
-        if imgCount == maxImg:
-            break
-        else:
-            imgCount += 1
+config()
 
 
 def getImageList():
     # return a list of local images
     print("Indexing local images...")
+
+auth = tweepy.OAuthHandler(notMyAPIKey, notMyAPIKeySecret)
+auth.set_access_token(notMyAccessToken, notMyAccessTokenSecret)
+
+api = tweepy.API(auth, wait_on_rate_limit=True)
 
 def connectToTwitter():
     print("Connecting to twitter")
@@ -95,28 +67,103 @@ def postAStatus(api, statusIn):
 
 
 
-def postAnImage(api):
-
-    imagePath = "C:/Users/Tom/PycharmProjects/TwitterBot/cat0.webp"
-    status = "Cat!"
-
-    api.update_status_with_media(status, imagePath)
-    print("Tweeted an image: " + str(status))
 
 
+
+#imagePath = "C:/Users/Tom/Desktop/DEVELOPMENT/TwitterBot/TwitterBot/cute0.jpg"
+#api.update_status_with_media("", imagePath)
 
 def getImages():
-    #scrape images
-    print("scraped!")
+    print("getting new images!")
+    #scrapes images
+    subreddit = reddit.subreddit("floof")
+    posts = subreddit.top("week") #can also do hour, day, week, month
+    # Scraping the top posts of the current month
+    
+    #posts_dict = {"Title": [], "Post Text": [], "ID": [], "Score": [], "Total Comments": [], "Post URL": []}
+    posts_dict = {"Post URL": []}
+    
+    """for post in posts:
+        # Title of each post
+        posts_dict["Title"].append(post.title)
+        # Text inside a post
+        posts_dict["Post Text"].append(post.selftext)
+        # Unique ID of each post
+        posts_dict["ID"].append(post.id) 
+        # The score of a post
+        posts_dict["Score"].append(post.score)    
+        # Total number of comments inside the post
+        posts_dict["Total Comments"].append(post.num_comments)    
+        # URL of each post
+        posts_dict["Post URL"].append(post.url)"""
 
-schedule.every(2).seconds.do(getImages)
-#schedule.every(2).hour.do(getImages())
-#schedule.every(2).hour.do(getImages())
+    for post in posts:
+        posts_dict["Post URL"].append(post.url)
+        urlList.append(post.url)
+
+    #print(str(posts_dict))
+
+
+    imgCount = 0
+    maxImg = 15  #zero indexed
+
+    for imgIdx, image_url in enumerate(urlList):
+
+        #print(str(image_url[-3:]))
+
+        if(image_url[-3:] == 'jpg' or image_url[-3] == 'png'):
+            img_data = requests.get(image_url).content
+            inputName = "cute" + str(imgCount) + image_url[-4:]
+            with open(inputName, 'wb') as handler:
+                handler.write(img_data)
+
+            validURLList.append(image_url)
+
+            if imgCount == maxImg:
+                nextImgToPostIdx = 0
+                break
+            else:
+                imgCount += 1
+
+    return validURLList, nextImgToPostIdx
+
+
+def postAnImage(postIdx,validURLList):
+
+    #print("list: " + str(validURLList))
+    imagePath = "C:/Users/Tom/Desktop/DEVELOPMENT/TwitterBot/TwitterBot/cute" + str(postIdx) + validURLList[postIdx][-4:]
+    status = ""
+
+    #api.update_status_with_media(status, imagePath)
+    print("Tweeted an image: cute" + str(postIdx) + validURLList[postIdx][-4:])
+    
+    #nextImgToPostIdx += 1
+
+
+
+
+#schedule.every(2).seconds.do(getImages)
+#schedule.every(5).seconds.do(postAnImage)
+
+#schedule.every(45).minutes.do(getImages)
+#schedule.every(5).minutes.do(postAnImage)
+
+#schedule.every(18).hour.do(getImages)
+#schedule.every(2).hour.do(postAnImage)
 
 if __name__ == '__main__':
-    api = connectToTwitter()
+    #api = connectToTwitter()
+    #nextImgToPostIdx = 0
+    #validURLList, nextImgToPostIdx = getImages()
+    #postAnImage(nextImgToPostIdx,validURLList)
     while True:
-        schedule.run_pending()
+        validURLList, nextImgToPostIdx = getImages()
+        print("validURL: " + str(validURLList))
+        for postIdx, post in enumerate(validURLList):
+            postAnImage(postIdx,validURLList)
+            time.sleep(60 * 2)
+
+        #schedule.run_pending()
         time.sleep(1)
     #statusIn = "Hello Twitter"
     #postAStatus(api, statusIn)
