@@ -9,7 +9,8 @@ from passwrd import *
 
 #
 #
-
+def getImageList():
+    # return a list of local images
 
 def connectToTwitter():
     print("Connecting to twitter")
@@ -24,9 +25,13 @@ def connectToTwitter():
 
     return api
 
+
+
 def postAStatus(api, statusIn):
     print("Tweeted: " + str(statusIn))
     api.update_status(status=statusIn)
+
+
 
 def postAnImage(api):
 
@@ -35,6 +40,8 @@ def postAnImage(api):
 
     api.update_status_with_media(status, imagePath)
     print("Tweeted an image: " + str(status))
+
+
 
 def getImages():
     #scrape images
