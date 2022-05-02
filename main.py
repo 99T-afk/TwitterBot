@@ -6,6 +6,7 @@ import tweepy
 import schedule
 import time
 import praw
+import requests
 from passwrd import *
 
 #
@@ -20,36 +21,54 @@ reddit = praw.Reddit(
 
 print(reddit.user.me())
 
-subreddit = reddit.subreddit("awww")
+subreddit = reddit.subreddit("floof")
+
+urlList = []
 
 posts = subreddit.top("month")
 # Scraping the top posts of the current month
  
-posts_dict = {"Title": [], "Post Text": [],
-              "ID": [], "Score": [],
-              "Total Comments": [], "Post URL": []
-              }
+#posts_dict = {"Title": [], "Post Text": [], "ID": [], "Score": [], "Total Comments": [], "Post URL": []}
+posts_dict = {"Post URL": []}
  
-for post in posts:
+"""for post in posts:
     # Title of each post
     posts_dict["Title"].append(post.title)
-     
     # Text inside a post
     posts_dict["Post Text"].append(post.selftext)
-     
     # Unique ID of each post
-    posts_dict["ID"].append(post.id)
-     
+    posts_dict["ID"].append(post.id) 
     # The score of a post
-    posts_dict["Score"].append(post.score)
-     
+    posts_dict["Score"].append(post.score)    
     # Total number of comments inside the post
-    posts_dict["Total Comments"].append(post.num_comments)
-     
+    posts_dict["Total Comments"].append(post.num_comments)    
     # URL of each post
+    posts_dict["Post URL"].append(post.url)"""
+
+for post in posts:
     posts_dict["Post URL"].append(post.url)
+    urlList.append(post.url)
 
 print(str(posts_dict))
+
+
+imgCount = 0
+maxImg = 9  #zero indexed
+for imgIdx, image_url in enumerate(urlList):
+
+    #print(str(image_url[-3:]))
+
+    if(image_url[-3:] == 'jpg' or image_url[-3] == 'png'):
+        img_data = requests.get(image_url).content
+        inputName = "cute" + str(imgCount) + image_url[-4:]
+        with open(inputName, 'wb') as handler:
+            handler.write(img_data)
+        
+        if imgCount == maxImg:
+            break
+        else:
+            imgCount += 1
+
 
 def getImageList():
     # return a list of local images
