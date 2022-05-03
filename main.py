@@ -76,8 +76,8 @@ def postAStatus(api, statusIn):
 def getImages():
     print("getting new images!")
     #scrapes images
-    subreddit = reddit.subreddit("floof")
-    posts = subreddit.top("week") #can also do hour, day, week, month
+    subreddit = reddit.subreddit("cats")
+    posts = subreddit.top("day") #can also do hour, day, week, month
     # Scraping the top posts of the current month
     
     #posts_dict = {"Title": [], "Post Text": [], "ID": [], "Score": [], "Total Comments": [], "Post URL": []}
@@ -134,7 +134,7 @@ def postAnImage(postIdx,validURLList):
     imagePath = "C:/Users/Tom/Desktop/DEVELOPMENT/TwitterBot/TwitterBot/cute" + str(postIdx) + validURLList[postIdx][-4:]
     status = ""
 
-    #api.update_status_with_media(status, imagePath)
+    api.update_status_with_media(status, imagePath)
     print("Tweeted an image: cute" + str(postIdx) + validURLList[postIdx][-4:])
     
     #nextImgToPostIdx += 1
@@ -151,7 +151,7 @@ if __name__ == '__main__':
         print("validURL: " + str(validURLList))
         for postIdx, post in enumerate(validURLList):
             postAnImage(postIdx,validURLList)
-            time.sleep(60 * 2)
+            time.sleep(60 * 120)
 
         #schedule.run_pending()
         time.sleep(1)
